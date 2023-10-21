@@ -121,9 +121,17 @@ class XPlaneConnect(object):
 
 
     def pauseSimToggle(self):
+        """ Pauses or un-pauses the physics simulation engine in X-Plane. """
         command = 'sim/operation/pause_toggle'
         buffer = struct.pack('=5s500s', b'CMND', command.encode('utf-8'))
         self.sendUDPxp(buffer)
+
+
+    def sendCMND(self, command):
+        """ Executes command. Commands listed here: https://www.siminnovations.com/xplane/command/ """
+        buffer = struct.pack('=5s500s', b'CMND', command.encode('utf-8'))
+        self.sendUDPxp(buffer)
+
 
     # X-Plane UDP Data
     def readDATA(self):
