@@ -32,6 +32,8 @@ class XPlaneConnect(object):
 
         # Setup XPlane IP and port
         self.xpDst = (xpIP, xpPort)
+        # Setup XPlane UDP port for custom commands
+        self.port = port
 
         # Create and bind socket
         clientAddr = ("0.0.0.0", port)
@@ -63,6 +65,15 @@ class XPlaneConnect(object):
             raise ValueError("sendUDP: buffer is empty.")
 
         self.socket.sendto(buffer, 0, self.xpDst)
+
+
+    def sendUDPxp(self, buffer):
+        """ Sends a message over the specified UDP port. """
+        # Preconditions
+        if(len(buffer) == 0):
+            raise ValueError("sendUDP: buffer is empty.")
+
+        self.socket.sendto(buffer, 0, (self.xpDst[0], self.port))
 
     def readUDP(self):
         """Reads a message from the underlying UDP socket."""
@@ -107,6 +118,12 @@ class XPlaneConnect(object):
 
         buffer = struct.pack(b"<4sxB", b"SIMU", pause)
         self.sendUDP(buffer)
+
+
+    def pauseSimToggle(self):
+        command = 'sim/operation/pause_toggle'
+        buffer = struct.pack('=5s500s', b'CMND', command.encode('utf-8'))
+        self.sendUDPxp(buffer)
 
     # X-Plane UDP Data
     def readDATA(self):
